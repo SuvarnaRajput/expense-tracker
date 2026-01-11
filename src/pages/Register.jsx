@@ -9,10 +9,17 @@ export default function Register() {
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+
+  try {
     await createUserWithEmailAndPassword(auth, email, password);
+    alert("User registered successfully!");
     navigate("/");
-  };
+  } catch (error) {
+    console.error("Firebase Error:", error);
+    alert(error.message);
+  }
+};
 
   return (
     <div className="min-h-screen flex justify-center items-center">
