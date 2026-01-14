@@ -21,8 +21,27 @@ import {
   YAxis,
   CartesianGrid,
 } from "recharts";
+import { motion } from "framer-motion";
 
 const COLORS = ["#6366F1", "#22C55E", "#F59E0B", "#EF4444", "#0EA5E9"];
+
+/* 🔹 Animation Variants */
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
 
 export default function Dashboard() {
   const { user } = useAuthStore();
@@ -111,39 +130,54 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-bgApp-light dark:bg-bgApp-dark text-textMain-light dark:text-textMain-dark">
       <div className="container py-8">
-        {/* Page Header */}
-        <h1 className="text-2xl font-semibold mb-8">Dashboard Overview</h1>
+        <motion.h1
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="text-2xl font-semibold mb-8"
+        >
+          Dashboard Overview
+        </motion.h1>
 
         {/* Summary Cards */}
-        <div className="grid gap-6 md:grid-cols-3 mb-10">
-          <div className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-6 shadow-soft">
-            <p className="text-textMuted-light dark:text-textMuted-dark">
-              Total Income
-            </p>
-            <p className="text-3xl font-bold text-success mt-2">
-              ₹{totalIncome}
-            </p>
-          </div>
-
-          <div className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-6 shadow-soft">
-            <p className="text-textMuted-light dark:text-textMuted-dark">
-              Total Expense
-            </p>
-            <p className="text-3xl font-bold text-danger mt-2">
-              ₹{totalExpense}
-            </p>
-          </div>
-
-          <div className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-6 shadow-soft">
-            <p className="text-textMuted-light dark:text-textMuted-dark">
-              Balance
-            </p>
-            <p className="text-3xl font-bold mt-2">₹{balance}</p>
-          </div>
-        </div>
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid gap-6 md:grid-cols-3 mb-10"
+        >
+          {[
+            { label: "Total Income", value: totalIncome, color: "text-success" },
+            {
+              label: "Total Expense",
+              value: totalExpense,
+              color: "text-danger",
+            },
+            { label: "Balance", value: balance, color: "" },
+          ].map((card, i) => (
+            <motion.div
+              key={i}
+              variants={item}
+              whileHover={{ y: -4 }}
+              className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-6 shadow-soft"
+            >
+              <p className="text-textMuted-light dark:text-textMuted-dark">
+                {card.label}
+              </p>
+              <p className={`text-3xl font-bold mt-2 ${card.color}`}>
+                ₹{card.value}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* Budget Card */}
-        <div className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-8 shadow-soft mb-10">
+        <motion.div
+          variants={item}
+          initial="hidden"
+          animate="show"
+          className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-8 shadow-soft mb-10"
+        >
           <h2 className="text-xl font-semibold mb-4">Monthly Budget</h2>
 
           {!savedBudget ? (
@@ -184,12 +218,19 @@ export default function Dashboard() {
               )}
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Charts */}
-        <div className="grid gap-8 md:grid-cols-2">
-          {/* Pie Chart */}
-          <div className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-6 shadow-soft">
+        <motion.div
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid gap-8 md:grid-cols-2"
+        >
+          <motion.div
+            variants={item}
+            className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-6 shadow-soft"
+          >
             <h2 className="text-lg font-semibold mb-4">
               Expense by Category
             </h2>
@@ -203,10 +244,12 @@ export default function Dashboard() {
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-          </div>
+          </motion.div>
 
-          {/* Bar Chart */}
-          <div className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-6 shadow-soft">
+          <motion.div
+            variants={item}
+            className="bg-card-light dark:bg-card-dark border border-borderSubtle-light dark:border-borderSubtle-dark rounded-2xl p-6 shadow-soft"
+          >
             <h2 className="text-lg font-semibold mb-4">
               Monthly Expense Analytics
             </h2>
@@ -219,8 +262,8 @@ export default function Dashboard() {
                 <Bar dataKey="amount" fill="#6366F1" />
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );
