@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import Navbar from "../components/Navbar";
+import AppNavbar from "../components/AppNavbar";
 
 const ProtectedRoute = () => {
   const { user, loading } = useAuthStore();
@@ -19,7 +19,7 @@ const ProtectedRoute = () => {
 
   return (
     <>
-      <Navbar />
+      <AppNavbar />
       <Outlet />
     </>
   );
